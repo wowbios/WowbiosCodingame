@@ -1,11 +1,20 @@
-﻿using FluentAssertions;
+﻿using System.Diagnostics;
+using FluentAssertions;
 using FluentAssertions.Extensions;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace ThomasAndTheFreightCars.Tests;
 
 public class ThomasTests
 {
+    private readonly ITestOutputHelper _outputHelper;
+
+    public ThomasTests(ITestOutputHelper outputHelper)
+    {
+        _outputHelper = outputHelper;
+    }
+
     [Theory]
     [InlineData(5, "4 5 1 3 2", 4)]
     [InlineData(10, "5 9 1 6 8 7 3 10 4 2", 6)]
@@ -16,8 +25,10 @@ public class ThomasTests
     public void Test(int n, string input, int expected)
     {
         var thomas = new Thomas(input);
+        var w = Stopwatch.StartNew();
         thomas.ExecutionTimeOf(t => t.Solve())
             .Should().BeLessThan(5.Seconds());
+        _outputHelper.WriteLine(w.Elapsed.ToString());
         thomas.Max.Should().Be(expected);
     }
 }
