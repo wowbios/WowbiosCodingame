@@ -2,6 +2,10 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenomeSequencing", "GenomeSequencing\GenomeSequencing.csproj", "{549C2332-62C9-471A-A7BD-AC2A0540B59C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThomasAndTheFreightCars", "ThomasAndTheFreightCars\ThomasAndTheFreightCars.csproj", "{80F6191B-6B1E-4AA4-B35E-8D59EE58DF10}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{B8065E43-8E1A-4B5F-92F8-1AA5A40177FA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +16,15 @@ Global
 		{549C2332-62C9-471A-A7BD-AC2A0540B59C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{549C2332-62C9-471A-A7BD-AC2A0540B59C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{549C2332-62C9-471A-A7BD-AC2A0540B59C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80F6191B-6B1E-4AA4-B35E-8D59EE58DF10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80F6191B-6B1E-4AA4-B35E-8D59EE58DF10}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80F6191B-6B1E-4AA4-B35E-8D59EE58DF10}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80F6191B-6B1E-4AA4-B35E-8D59EE58DF10}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8065E43-8E1A-4B5F-92F8-1AA5A40177FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8065E43-8E1A-4B5F-92F8-1AA5A40177FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8065E43-8E1A-4B5F-92F8-1AA5A40177FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8065E43-8E1A-4B5F-92F8-1AA5A40177FA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
 EndGlobal
