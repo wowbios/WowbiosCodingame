@@ -7,7 +7,7 @@ class Solution
         Console.ReadLine();
         string input = Console.ReadLine()!;
         Console.Error.WriteLine(input);
-        int maxLength = Thomas.Solve(input);
+        int maxLength = new Thomas(input).Solve();
         Console.WriteLine(maxLength);
     }
 }

@@ -2,13 +2,22 @@
 
 public class Thomas
 {
-    public static int Solve(string input)
+    public string Input { get; }
+
+    public int Max { get; private set; }
+
+    public Thomas(string input)
     {
-        int[] cars = input.Split(' ').Select(int.Parse).ToArray();
+        Input = input;
+    }
+    
+    public int Solve()
+    {
+        int[] cars = Input.Split(' ').Select(int.Parse).ToArray();
         return GetMaxTrainLength(cars);
     }
 
-    static int GetMaxTrainLength(int[] cars)
+    private int GetMaxTrainLength(int[] cars)
     {
         BuildChildren(
             int.MinValue,
@@ -18,11 +27,10 @@ public class Thomas
             0,
             cars,
             0);
-        return max;
+        return Max;
     }
 
-    private static int max = 0;
-    static void BuildChildren(
+    private void BuildChildren(
         int front,
         int rear,
         int sfront,
@@ -31,10 +39,10 @@ public class Thomas
         int[] cars,
         int i)
     {
-        if (i == cars.Length || (length + cars.Length - i) < max)
+        if (i == cars.Length || (length + cars.Length - i) < Max)
         {
-            if (length > max)
-                max = length;
+            if (length > Max)
+                Max = length;
             return;
         }
 

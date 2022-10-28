@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using FluentAssertions;
+using FluentAssertions.Extensions;
 using Xunit;
 
 namespace ThomasAndTheFreightCars.Tests;
@@ -15,10 +16,9 @@ public class ThomasTests
     [InlineData(100, "161 226 182 80 39 178 60 48 141 51 211 195 78 81 105 70 127 124 113 24 171 50 85 15 228 154 149 112 69 23 218 82 207 53 5 117 223 68 17 144 57 20 147 237 96 125 25 213 235 54 221 72 139 194 2 6 142 107 162 153 187 37 64 3 240 201 191 155 104 119 210 209 71 27 109 42 18 116 30 122 34 172 35 238 43 93 102 92 83 225 77 204 21 36 248 157 67 106 52 189", 23)]
     public void Test(int n, string input, int expected)
     {
-        var watch = Stopwatch.StartNew();
-        1.ExecutionTimeOf(_ => Thomas.Solve(input))
-            .Should()
-            .BeLessThan(TimeSpan.FromSeconds(5));
-        Debug.WriteLine("Elapsed: " + watch.Elapsed);
+        var thomas = new Thomas(input);
+        thomas.ExecutionTimeOf(t => t.Solve())
+            .Should().BeLessThan(5.Seconds());
+        thomas.Max.Should().Be(expected);
     }
 }
