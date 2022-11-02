@@ -2,40 +2,42 @@
 
 public class Thomas
 {
+    private readonly Action<string> _output;
     public string Input { get; }
 
     public int Max { get; private set; }
 
-    public Thomas(string input)
+    public Thomas(string input, Action<string> output)
     {
+        _output = output;
         Input = input;
     }
     
     public int Solve()
     {
         int[] numbers = Input.Split(' ').Select(int.Parse).ToArray();
-        int[][] allLis = GetLis(numbers);
+        int iterations = 0;
+        var allLis = GetLis(numbers, ref iterations);
 
         int[] lisMax = null;
         int[] ldsMax = null;
         int max = 0;
+
         foreach (int[] lis in allLis)
         {
-            int[] elements = numbers.Where(e => e < lis[0]).ToArray();
-            foreach (int[] lds in GetLds(elements))
+            int min = lis[0];
+            int[] elements = numbers.Where(e => e < min).ToArray();
+            foreach (int[] lds in GetLds(elements, ref iterations))
             {
+                iterations++;
+                int resultMax = lis.Length + lds.Length;
+                if (resultMax < max)
+                    continue;
+                
                 bool ok = true;
-                int prev = -1;
-                bool first = true;
-                foreach (var source in lis.Reverse().Union(lds))
+                int prev = min;
+                foreach (int source in lds)
                 {
-                    if (first)
-                    {
-                        prev = source;
-                        first = false;
-                        continue;
-                    }
-
                     if (prev < source)
                     {
                         ok = false;
@@ -45,43 +47,54 @@ public class Thomas
                     prev = source;
                 }
 
-                int resultMax = lis.Length + lds.Length;
                 if (ok && max < resultMax)
                 {
-                    Console.WriteLine($"ANALYZE LIS:{(string.Join(",", lis))} LDS:{(string.Join(",", lds))}");
                     max = resultMax;
-                     lisMax = lis;
-                     ldsMax = lds;
+                    lisMax = lis;
+                    ldsMax = lds;
                 }
             }
         }
-        Console.WriteLine("MAX: " + max);
-        Console.WriteLine(string.Join(",",lisMax));
-        Console.WriteLine(string.Join(",",ldsMax));
+
+        _output("Iterations: " + iterations);
+        _output("MAX: " + max);
+        _output(string.Join(",", lisMax));
+        _output(string.Join(",", ldsMax));
         Max = max;
         return max;
     }
 
-    private static int[][] GetLis(int[] numbers)
+    private static List<int[]> GetLis(int[] numbers, ref int iterations)
     {
-        int[][] counts = numbers.Select(x => new int[] { x }).ToArray();
+        List<int[]> allOriginalLis = numbers.Select(x => new int[] { x }).ToList();
         for (int j = 1; j < numbers.Length; j++)
         {
             for (int i = 0; i < j; i++)
             {
-                if (numbers[i] < numbers[j] && counts[j].Length < counts[i].Length + 1)
+                iterations++;
+                if (numbers[i] < numbers[j] && allOriginalLis[j].Length < allOriginalLis[i].Length + 1)
                 {
-                    counts[j] = new int[counts[i].Length + 1];
-                    counts[i].CopyTo(counts[j], 0);
-                    counts[j][counts[j].Length - 1] = numbers[j];
+                    allOriginalLis[j] = new int[allOriginalLis[i].Length + 1];
+                    allOriginalLis[i].CopyTo(allOriginalLis[j], 0);
+                    allOriginalLis[j][allOriginalLis[j].Length - 1] = numbers[j];
                 }
             }
         }
 
-        return counts;
+        List<int[]> cutLis = new(); 
+        foreach (int[] originalLis in allOriginalLis)
+        {
+            for (int i = 1; i < originalLis.Length; i++)
+            {
+                cutLis.Add(originalLis[i..]);
+            }
+        }
+
+        allOriginalLis.AddRange(cutLis);
+        return allOriginalLis;
     }
 
-    private static int[][] GetLds(int[] values)
+    private static int[][] GetLds(int[] values, ref int iterations)
     {
         int[][] counts = values.Select(x => new[] { x }).ToArray();
 
@@ -89,6 +102,7 @@ public class Thomas
         {
             for (int i = 0; i < j; i++)
             {
+                iterations++;
                 if (values[i] > values[j] && counts[j].Length < counts[i].Length + 1)
                 {
                     counts[j] = counts[i].Append(values[j]).ToArray();
