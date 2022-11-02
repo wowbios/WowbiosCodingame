@@ -19,36 +19,38 @@ public class Thomas
         int iterations = 0;
         var allLis = GetLis(numbers, ref iterations);
 
-        int[] lisMax = null;
-        int[] ldsMax = null;
+        Lis? lisMax = null;
+        int? ldsMaxLen = null;
         int max = 0;
 
-        foreach (int[] lis in allLis)
+        foreach (Lis lis in allLis)
         {
-            int min = lis[0];
+            int min = lis.Min;
             int[] elements = numbers.Where(e => e < min).ToArray();
-            foreach (int[] lds in GetLds(elements, ref iterations))
+            foreach (int lds in GetLds(elements, ref iterations))
             {
                 iterations++;
-                int resultMax = lis.Length + lds.Length;
+                int resultMax = lis.Length + lds;
                 if (resultMax < max)
                     continue;
 
                 max = resultMax;
                 lisMax = lis;
-                ldsMax = lds;
+                ldsMaxLen = lds;
             }
         }
 
         _output("Iterations: " + iterations);
         _output("MAX: " + max);
         _output(string.Join(",", lisMax));
-        _output(string.Join(",", ldsMax));
+        _output(string.Join(",", ldsMaxLen));
         Max = max;
         return max;
     }
 
-    private static List<int[]> GetLis(int[] numbers, ref int iterations)
+    readonly record struct Lis(int Min, int Length); // 1 2 4 5 => (1, 4)
+    
+    private static Lis[] GetLis(int[] numbers, ref int iterations)
     {
         List<int[]> allOriginalLis = numbers.Select(x => new int[] { x }).ToList();
         for (int j = 1; j < numbers.Length; j++)
@@ -65,31 +67,30 @@ public class Thomas
             }
         }
 
-        List<int[]> cutLis = new(); 
+        List<Lis> cutLis = new(); 
         foreach (int[] originalLis in allOriginalLis)
         {
             for (int i = 1; i < originalLis.Length; i++)
-            {
-                cutLis.Add(originalLis[i..]);
-            }
+                cutLis.Add(new Lis(originalLis[i], originalLis.Length - i));
         }
 
-        allOriginalLis.AddRange(cutLis);
-        return allOriginalLis;
+        return allOriginalLis.Select(x=> new Lis(x[0], x.Length))
+            .Union(cutLis)
+            .ToArray();
     }
 
-    private static int[][] GetLds(int[] values, ref int iterations)
+    private static int[] GetLds(int[] values, ref int iterations)
     {
-        int[][] counts = values.Select(x => new[] { x }).ToArray();
+        int[] counts = values.Select(_ => 1).ToArray();
 
         for (int j = 1; j < values.Length; j++)
         {
             for (int i = 0; i < j; i++)
             {
                 iterations++;
-                if (values[i] > values[j] && counts[j].Length < counts[i].Length + 1)
+                if (values[i] > values[j] && counts[j] < counts[i] + 1)
                 {
-                    counts[j] = counts[i].Append(values[j]).ToArray();
+                    counts[j] = counts[i] + 1;
                 }
             }
         }
