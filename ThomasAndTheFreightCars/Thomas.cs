@@ -27,7 +27,7 @@ public class Thomas
         {
             int min = lis.Min;
             int[] elements = numbers.Where(e => e < min).ToArray();
-            foreach (int lds in GetLds(elements, ref iterations))
+            foreach (int lds in GetLds(elements, ref iterations).OrderByDescending(x => x))
             {
                 iterations++;
                 int resultMax = lis.Length + lds;
@@ -81,7 +81,8 @@ public class Thomas
 
     private static int[] GetLds(int[] values, ref int iterations)
     {
-        int[] counts = values.Select(_ => 1).ToArray();
+        int[] counts = new int[values.Length];
+        Array.Fill(counts, 1);
 
         for (int j = 1; j < values.Length; j++)
         {
