@@ -13,72 +13,89 @@ public class Thomas
     
     public int Solve()
     {
-        int[] cars = Input.Split(' ').Select(int.Parse).ToArray();
-        return GetMaxTrainLength(cars);
+        int[] numbers = Input.Split(' ').Select(int.Parse).ToArray();
+        int[][] allLis = GetLis(numbers);
+
+        int[] lisMax = null;
+        int[] ldsMax = null;
+        int max = 0;
+        foreach (int[] lis in allLis)
+        {
+            int[] elements = numbers.Where(e => e < lis[0]).ToArray();
+            foreach (int[] lds in GetLds(elements))
+            {
+                bool ok = true;
+                int prev = -1;
+                bool first = true;
+                foreach (var source in lis.Reverse().Union(lds))
+                {
+                    if (first)
+                    {
+                        prev = source;
+                        first = false;
+                        continue;
+                    }
+
+                    if (prev < source)
+                    {
+                        ok = false;
+                        break;
+                    }
+
+                    prev = source;
+                }
+
+                int resultMax = lis.Length + lds.Length;
+                if (ok && max < resultMax)
+                {
+                    Console.WriteLine($"ANALYZE LIS:{(string.Join(",", lis))} LDS:{(string.Join(",", lds))}");
+                    max = resultMax;
+                     lisMax = lis;
+                     ldsMax = lds;
+                }
+            }
+        }
+        Console.WriteLine("MAX: " + max);
+        Console.WriteLine(string.Join(",",lisMax));
+        Console.WriteLine(string.Join(",",ldsMax));
+        Max = max;
+        return max;
     }
 
-    private int GetMaxTrainLength(int[] cars)
+    private static int[][] GetLis(int[] numbers)
     {
-        BuildChildren(
-            int.MinValue,
-            int.MaxValue,
-            int.MaxValue,
-            int.MinValue,
-            0,
-            cars,
-            0);
-        return Max;
+        int[][] counts = numbers.Select(x => new int[] { x }).ToArray();
+        for (int j = 1; j < numbers.Length; j++)
+        {
+            for (int i = 0; i < j; i++)
+            {
+                if (numbers[i] < numbers[j] && counts[j].Length < counts[i].Length + 1)
+                {
+                    counts[j] = new int[counts[i].Length + 1];
+                    counts[i].CopyTo(counts[j], 0);
+                    counts[j][counts[j].Length - 1] = numbers[j];
+                }
+            }
+        }
+
+        return counts;
     }
 
-    private void BuildChildren(
-        int front,
-        int rear,
-        int sfront,
-        int srear,
-        int length,
-        int[] cars,
-        int i)
+    private static int[][] GetLds(int[] values)
     {
-        if (i == cars.Length || (length + cars.Length - i) < Max)
+        int[][] counts = values.Select(x => new[] { x }).ToArray();
+
+        for (int j = 1; j < values.Length; j++)
         {
-            if (length > Max)
-                Max = length;
-            return;
+            for (int i = 0; i < j; i++)
+            {
+                if (values[i] > values[j] && counts[j].Length < counts[i].Length + 1)
+                {
+                    counts[j] = counts[i].Append(values[j]).ToArray();
+                }
+            }
         }
 
-        var car = cars[i];
-        // front
-        if (front < car && car > srear)
-        {
-            BuildChildren(
-                car,
-                rear,
-                Math.Min(sfront, car),
-                srear,
-                length + 1,
-                cars,
-                i + 1);
-        }
-
-        // rear
-        if (rear > car && car < sfront)
-        {
-            BuildChildren(front,
-                car,
-                sfront,
-                Math.Max(srear, car),
-                length + 1,
-                cars,
-                i + 1);
-        }
-
-        // skip
-        BuildChildren(front,
-            rear,
-            sfront,
-            srear,
-            length,
-            cars,
-            i + 1);
+        return counts;
     }
 }
