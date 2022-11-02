@@ -33,26 +33,10 @@ public class Thomas
                 int resultMax = lis.Length + lds.Length;
                 if (resultMax < max)
                     continue;
-                
-                bool ok = true;
-                int prev = min;
-                foreach (int source in lds)
-                {
-                    if (prev < source)
-                    {
-                        ok = false;
-                        break;
-                    }
 
-                    prev = source;
-                }
-
-                if (ok && max < resultMax)
-                {
-                    max = resultMax;
-                    lisMax = lis;
-                    ldsMax = lds;
-                }
+                max = resultMax;
+                lisMax = lis;
+                ldsMax = lds;
             }
         }
 
