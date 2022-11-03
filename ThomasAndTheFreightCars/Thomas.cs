@@ -12,90 +12,42 @@ public class Thomas
         _output = output;
         Input = input;
     }
-    
+
     public int Solve()
     {
         int[] numbers = Input.Split(' ').Select(int.Parse).ToArray();
-        int iterations = 0;
-        var allLis = GetLis(numbers, ref iterations);
-
-        Lis? lisMax = null;
-        int? ldsMaxLen = null;
         int max = 0;
-
-        foreach (Lis lis in allLis)
+        foreach (int number in numbers)
         {
-            int min = lis.Min;
-            int[] elements = numbers.Where(e => e < min).ToArray();
-            foreach (int lds in GetLds(elements, ref iterations).OrderByDescending(x => x))
-            {
-                iterations++;
-                int resultMax = lis.Length + lds;
-                if (resultMax < max)
-                    continue;
-
-                max = resultMax;
-                lisMax = lis;
-                ldsMaxLen = lds;
-            }
+            int maxLis = GetMaxLis(numbers.Where(x => x >= number).ToArray());
+            int maxLds = GetMaxLis(numbers.Reverse().Where(x => x < number).ToArray());
+            max = Math.Max(maxLis + maxLds, max);
         }
 
-        _output("Iterations: " + iterations);
-        _output("MAX: " + max);
-        _output(string.Join(",", lisMax));
-        _output(string.Join(",", ldsMaxLen));
         Max = max;
-        return max;
+        return Max;
     }
 
-    readonly record struct Lis(int Min, int Length); // 1 2 4 5 => (1, 4)
-    
-    private static Lis[] GetLis(int[] numbers, ref int iterations)
+    private int GetMaxLis(int[] numbers)
     {
-        List<int[]> allOriginalLis = numbers.Select(x => new int[] { x }).ToList();
+        if (numbers.Length == 0)
+            return 0;
+
+        int max = 1;
+        int[] liss = new int[numbers.Length];
+        Array.Fill(liss, 1);
         for (int j = 1; j < numbers.Length; j++)
         {
             for (int i = 0; i < j; i++)
             {
-                iterations++;
-                if (numbers[i] < numbers[j] && allOriginalLis[j].Length < allOriginalLis[i].Length + 1)
+                if (numbers[i] < numbers[j] && liss[j] < liss[i] + 1)
                 {
-                    allOriginalLis[j] = new int[allOriginalLis[i].Length + 1];
-                    allOriginalLis[i].CopyTo(allOriginalLis[j], 0);
-                    allOriginalLis[j][allOriginalLis[j].Length - 1] = numbers[j];
+                    liss[j] = liss[i] + 1;
+                    max = Math.Max(liss[j], max);
                 }
             }
         }
 
-        List<Lis> cutLis = new(); 
-        foreach (int[] originalLis in allOriginalLis)
-        {
-            for (int i = 1; i < originalLis.Length; i++)
-                cutLis.Add(new Lis(originalLis[i], originalLis.Length - i));
-        }
-
-        return allOriginalLis.Select(x=> new Lis(x[0], x.Length))
-            .Union(cutLis)
-            .ToArray();
-    }
-
-    private static int[] GetLds(int[] values, ref int iterations)
-    {
-        int[] counts = new int[values.Length];
-        Array.Fill(counts, 1);
-
-        for (int j = 1; j < values.Length; j++)
-        {
-            for (int i = 0; i < j; i++)
-            {
-                iterations++;
-                if (values[i] > values[j] && counts[j] < counts[i] + 1)
-                {
-                    counts[j] = counts[i] + 1;
-                }
-            }
-        }
-
-        return counts;
+        return max;
     }
 }
