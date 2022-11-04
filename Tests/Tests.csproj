@@ -4,7 +4,7 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <RootNamespace>ThomasAndTheFreightCars.Tests</RootNamespace>
+        <RootNamespace>Tests</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -14,6 +14,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\ObsoleteProgramming\ObsoleteProgramming.csproj" />
       <ProjectReference Include="..\ThomasAndTheFreightCars\ThomasAndTheFreightCars.csproj" />
     </ItemGroup>
 

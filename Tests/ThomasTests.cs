@@ -1,10 +1,11 @@
 ﻿using System.Diagnostics;
 using FluentAssertions;
 using FluentAssertions.Extensions;
+using ThomasAndTheFreightCars;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace ThomasAndTheFreightCars.Tests;
+namespace Tests;
 
 public class ThomasTests
 {
