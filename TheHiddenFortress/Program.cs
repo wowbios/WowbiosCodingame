@@ -28,32 +28,34 @@ Console.WriteLine("ROW MINS: " + string.Join(", ", rows));
 Console.WriteLine("COL MINS: " + string.Join(", ", cols));
 
 bool[,] result = new bool[size, size];
-Guess(result, cols, rows, 0, 0);
+bool ok = Guess(result, cols, rows, 0, 0);
+if (!ok)
+    Console.WriteLine("Fail");
 Print(result);
 
 static bool Guess(bool[,] field, int[] cols, int[] rows, int x, int y)
 {
-    // Console.WriteLine($"GUESS {x} {y}");
-    // Print(field);
-    
-
-    field[x, y] = true;
     (int xx, int yy)? next = GetNext(x, y);
-    if (next is null)
+    if (next is null) // end
     {
         if (Validate(field, cols, rows))
             return true;
-        else
-        {
-            field[x, y] = false;
-            return Validate(field, cols, rows);
-        }
+        
+        field[x, y] = true;
+        return Validate(field, cols, rows);
     }
-    if (Validate(field,cols,rows) && Guess(field, cols, rows, next.Value.xx, next.Value.yy))
-        return true;
 
-    field[x, y] = false;
-    return Guess(field, cols, rows, next.Value.xx, next.Value.yy);
+    (int xx, int yy) = next.Value;
+ 
+    field[x, y] = true;   
+    if (!Guess(field, cols, rows, xx, yy))
+    {
+        field[x, y] = false;
+        if (!Guess(field, cols, rows, xx, yy))
+            return false;
+    }
+
+    return true;
 }
 
 static (int, int)? GetPrev(int x, int y)
@@ -85,20 +87,20 @@ static bool Validate(bool[,] field, int[] cols, int[] rows)
         int sum = 0;
         for (int j = 0; j < field.GetLength(1); j++)
         {
-            sum += field[i, j] ? 1 : 0;
+            if (field[i, j]) sum++;
         }
 
-        if (sum > rows[i]) return false;
+        if (sum != rows[i]) return false;
     }
     for (int i = 0; i < field.GetLength(1); i++)
     {
         int sum = 0;
         for (int j = 0; j < field.GetLength(0); j++)
         {
-            sum += field[j, i] ? 1 : 0;
+            if (field[j, i]) sum++;
         }
 
-        if (sum > cols[i]) return false;
+        if (sum != cols[i]) return false;
     }
 
     return true;
