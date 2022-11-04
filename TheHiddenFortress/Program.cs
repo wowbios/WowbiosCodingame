@@ -28,48 +28,32 @@ Console.WriteLine("ROW MINS: " + string.Join(", ", rows));
 Console.WriteLine("COL MINS: " + string.Join(", ", cols));
 
 bool[,] result = new bool[size, size];
-
-for (int i = 0; i < size; i++)
-{
-    bool ok = false;
-    for (int j = 0; j < size; j++)
-    {
-        Console.WriteLine($"START AT {i} {j}");
-        if (Guess(result, cols, rows, i, j, true))
-        {
-            ok = true;
-            break;
-        }
-        else
-        {
-            result = new bool[size, size];
-        }
-    }
-
-    if (ok)
-        break;
-}
-
+Guess(result, cols, rows, 0, 0);
 Print(result);
 
-static bool Guess(bool[,] field, int[] cols, int[] rows, int x, int y, bool guess)
+static bool Guess(bool[,] field, int[] cols, int[] rows, int x, int y)
 {
     // Console.WriteLine($"GUESS {x} {y}");
+    // Print(field);
     
 
-    field[x, y] = guess;
-    if (Validate(field, cols, rows))
+    field[x, y] = true;
+    (int xx, int yy)? next = GetNext(x, y);
+    if (next is null)
     {
-        (int xx, int yy)? next = GetNext(x, y);
-        if (next is null) return true;
-        return Guess(field, cols, rows, next.Value.xx, next.Value.yy, guess);
+        if (Validate(field, cols, rows))
+            return true;
+        else
+        {
+            field[x, y] = false;
+            return Validate(field, cols, rows);
+        }
     }
-    else
-    {
-        (int xx, int yy)? next = GetNext(x, y);
-        if (next is null) return false;
-        return Guess(field, cols, rows, next.Value.xx, next.Value.yy, guess);
-    }
+    if (Validate(field,cols,rows) && Guess(field, cols, rows, next.Value.xx, next.Value.yy))
+        return true;
+
+    field[x, y] = false;
+    return Guess(field, cols, rows, next.Value.xx, next.Value.yy);
 }
 
 static (int, int)? GetPrev(int x, int y)
@@ -104,7 +88,7 @@ static bool Validate(bool[,] field, int[] cols, int[] rows)
             sum += field[i, j] ? 1 : 0;
         }
 
-        if (sum != rows[i]) return false;
+        if (sum > rows[i]) return false;
     }
     for (int i = 0; i < field.GetLength(1); i++)
     {
@@ -114,7 +98,7 @@ static bool Validate(bool[,] field, int[] cols, int[] rows)
             sum += field[j, i] ? 1 : 0;
         }
 
-        if (sum != cols[i]) return false;
+        if (sum > cols[i]) return false;
     }
 
     return true;
