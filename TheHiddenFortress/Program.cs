@@ -1,16 +1,22 @@
-﻿string field = 
-@"65756
-45655
-43545
-22423
-56756";
-const int size = 5;
-//
+﻿// string field = 
+// @"65756
+// 45655
+// 43545
+// 22423
+// 56756";
+// const int size = 5;
+
 // string field =
 //     @"212
 // 322
 // 201";
 // const int size = 3;
+
+string field =
+    @"122
+212
+221";
+const int size = 3;
 
 int[,] arr = new int[size, size];
 var fieldRows = field
@@ -38,11 +44,16 @@ static bool Guess(bool[,] field, int[] cols, int[] rows, int x, int y)
     (int xx, int yy)? next = GetNext(x, y);
     if (next is null) // end
     {
-        if (Validate(field, cols, rows))
-            return true;
-        
-        field[x, y] = true;
-        return Validate(field, cols, rows);
+        if (!Validate(field, cols, rows))
+        {
+            field[x, y] = true;
+            if (!Validate(field, cols, rows))
+            {
+                field[x, y] = false;
+                return false;
+            }
+        }
+        return true;
     }
 
     (int xx, int yy) = next.Value;
@@ -90,7 +101,7 @@ static bool Validate(bool[,] field, int[] cols, int[] rows)
             if (field[i, j]) sum++;
         }
 
-        if (sum > rows[i]) return false;
+        if (sum != rows[i]) return false;
     }
     for (int i = 0; i < field.GetLength(1); i++)
     {
@@ -100,7 +111,7 @@ static bool Validate(bool[,] field, int[] cols, int[] rows)
             if (field[j, i]) sum++;
         }
 
-        if (sum > cols[i]) return false;
+        if (sum != cols[i]) return false;
     }
 
     return true;
