@@ -90,7 +90,7 @@ static bool Validate(bool[,] field, int[] cols, int[] rows)
             if (field[i, j]) sum++;
         }
 
-        if (sum != rows[i]) return false;
+        if (sum > rows[i]) return false;
     }
     for (int i = 0; i < field.GetLength(1); i++)
     {
@@ -100,7 +100,7 @@ static bool Validate(bool[,] field, int[] cols, int[] rows)
             if (field[j, i]) sum++;
         }
 
-        if (sum != cols[i]) return false;
+        if (sum > cols[i]) return false;
     }
 
     return true;
