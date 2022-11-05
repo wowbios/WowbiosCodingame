@@ -15,6 +15,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\ObsoleteProgramming\ObsoleteProgramming.csproj" />
+      <ProjectReference Include="..\TheHiddenFortress\TheHiddenFortress.csproj" />
       <ProjectReference Include="..\ThomasAndTheFreightCars\ThomasAndTheFreightCars.csproj" />
     </ItemGroup>
 
