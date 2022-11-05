@@ -29,11 +29,7 @@ public class HiddenFortress
                 result[i, j] = true;
         }
 
-        var sw = Stopwatch.StartNew();
-        bool ok = Guess(result, _original, 0, 0);
-        Console.WriteLine(sw.Elapsed);
-        if (!ok)
-            Console.WriteLine("Fail");
+        Guess(result, _original, 0, 0);
         return result;
     }
 
@@ -108,12 +104,10 @@ public class HiddenFortress
         {
             for (int j = 0; j < next.GetLength(1); j++)
             {
-                Console.Write((next[i, j] ? 'O' : '.') + "\t\t");
+                Console.Write((next[i, j] ? 'O' : '.'));
             }
 
             Console.WriteLine();
         }
-
-        Console.WriteLine();
     }
 }
