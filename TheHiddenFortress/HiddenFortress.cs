@@ -5,18 +5,18 @@ namespace TheHiddenFortress;
 public class HiddenFortress
 {
     private readonly int _size;
-    private readonly int[,] _arr;
+    private readonly int[,] _original;
 
     public HiddenFortress(int size, string field)
     {
         _size = size;
-        _arr = new int[size, size];
-        var fieldRows = field
+        _original = new int[size, size];
+        string[] fieldRows = field
             .Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-        for (int i = 0; i < fieldRows.Length; i++)
+        for (var i = 0; i < fieldRows.Length; i++)
         {
-            for (int j = 0; j < fieldRows[i].Length; j++)
-                _arr[i, j] = int.Parse(fieldRows[i][j].ToString());
+            for (var j = 0; j < fieldRows[i].Length; j++)
+                _original[i, j] = int.Parse(fieldRows[i][j].ToString());
         }
     }
 
@@ -30,7 +30,7 @@ public class HiddenFortress
         }
 
         var sw = Stopwatch.StartNew();
-        bool ok = Guess(result, _arr, 0, 0);
+        bool ok = Guess(result, _original, 0, 0);
         Console.WriteLine(sw.Elapsed);
         if (!ok)
             Console.WriteLine("Fail");
