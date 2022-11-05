@@ -1,22 +1,22 @@
-﻿// string field = 
-// @"65756
-// 45655
-// 43545
-// 22423
-// 56756";
-// const int size = 5;
+﻿string field = 
+@"65756
+45655
+43545
+22423
+56756";
+const int size = 5;
 
 // string field =
 //     @"212
 // 322
 // 201";
 // const int size = 3;
-
-string field =
-    @"122
-212
-221";
-const int size = 3;
+//
+// string field =
+//     @"122
+// 212
+// 221";
+// const int size = 3;
 
 int[,] arr = new int[size, size];
 var fieldRows = field
@@ -34,22 +34,31 @@ Console.WriteLine("ROW MINS: " + string.Join(", ", rows));
 Console.WriteLine("COL MINS: " + string.Join(", ", cols));
 
 bool[,] result = new bool[size, size];
-bool ok = Guess(result, cols, rows, 0, 0);
+for (int i = 0; i < size; i++)
+{
+    for (int j = 0; j < size; j++)
+    {
+        result[i, j] = true;
+    }
+}
+bool ok = Guess(result, arr, cols, rows, 0, 0);
 if (!ok)
     Console.WriteLine("Fail");
 Print(result);
 
-static bool Guess(bool[,] field, int[] cols, int[] rows, int x, int y)
+static bool Guess(bool[,] field, int[,] expected, int[] cols, int[] rows, int x, int y)
 {
     (int xx, int yy)? next = GetNext(x, y);
     if (next is null) // end
     {
-        if (!Validate(field, cols, rows))
+        // if (!Validate(field, cols, rows))
+        if (!Validate2(field, expected))
         {
-            field[x, y] = true;
-            if (!Validate(field, cols, rows))
+            field[x, y] = false;
+            // if (!Validate(field, cols, rows))
+            if (!Validate2(field, expected))
             {
-                field[x, y] = false;
+                field[x, y] = true;
                 return false;
             }
         }
@@ -58,11 +67,11 @@ static bool Guess(bool[,] field, int[] cols, int[] rows, int x, int y)
 
     (int xx, int yy) = next.Value;
  
-    field[x, y] = true;   
-    if (!Guess(field, cols, rows, xx, yy))
+    field[x, y] = false;   
+    if (!Guess(field, expected, cols, rows, xx, yy))
     {
-        field[x, y] = false;
-        if (!Guess(field, cols, rows, xx, yy))
+        field[x, y] = true;
+        if (!Guess(field, expected, cols, rows, xx, yy))
             return false;
     }
 
@@ -89,6 +98,31 @@ static (int, int)? GetNext(int x, int y)
         return (x + 1, 0);
     
     return (x, y + 1);
+}
+
+static bool Validate2(bool[,] field, int[,] expected)
+{
+    int[,] map = new int[size, size];
+
+    for (int i = 0; i < size; i++)
+    {
+        for (int j = 0; j < size; j++)
+        {
+            int row = 0;
+            int col = 0;
+            for (int c = 0; c < size; c++)
+            {
+                if (field[i, c]) row++;
+                if (field[c, j]) col++;
+            }
+
+            int result = field[i, j] ? row + col - 1 : row + col;
+            if (result != expected[i, j])
+                return false;
+        }
+    }
+
+    return true;
 }
 
 static bool Validate(bool[,] field, int[] cols, int[] rows)
