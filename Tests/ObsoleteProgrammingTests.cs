@@ -98,11 +98,11 @@ public class ObsoleteProgrammingTests
                     51,
                     5,
                     0,
+                    1,
+                    -5,
                     5,
-                    -137,
-                    24,
-                    24,
-                    5
+                    5,
+                    2
                 }
             };
         }
