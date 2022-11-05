@@ -16,7 +16,16 @@ public class HiddenFortress
         for (var i = 0; i < fieldRows.Length; i++)
         {
             for (var j = 0; j < fieldRows[i].Length; j++)
-                _original[i, j] = int.Parse(fieldRows[i][j].ToString());
+            {
+                char ch = fieldRows[i][j];
+                int value = char.IsDigit(ch)
+                    ? int.Parse(ch.ToString())
+                    : (ch is >= 'A' and <= 'Z'
+                        ? ch - 29
+                        : ch - 87);
+
+                _original[i, j] = value;
+            }
         }
     }
 
@@ -33,8 +42,15 @@ public class HiddenFortress
         return result;
     }
 
+    public long Iterations { get; private set; }
+    public long ValidationIterations { get; private set; }
+    
     private bool Guess(bool[,] field, int[,] expected, int x, int y)
     {
+        if (!PreValidate(field, expected))
+            return false;
+
+        Iterations++;
         (int xx, int yy)? next = GetNext(x, y);
         if (next is null) // end
         {
@@ -81,6 +97,7 @@ public class HiddenFortress
         {
             for (int j = 0; j < _size; j++)
             {
+                ValidationIterations++;
                 int total = 0;
                 for (int c = 0; c < _size; c++)
                 {
@@ -90,6 +107,28 @@ public class HiddenFortress
 
                 int result = field[i, j] ? total - 1 : total;
                 if (result != expected[i, j])
+                    return false;
+            }
+        }
+
+        return true;
+    }
+
+    private bool PreValidate(bool[,] field, int[,] expected)
+    {
+        for (int i = 0; i < _size; i++)
+        {
+            for (int j = 0; j < _size; j++)
+            {
+                int total = 0;
+                for (int c = 0; c < _size; c++)
+                {
+                    if (!field[i, c]) total++;
+                    if (!field[c, j]) total++;
+                }
+
+                int result = !field[i, j] ? total - 1 : total;
+                if (result > (2 * _size - 1 - expected[i,j]))
                     return false;
             }
         }
