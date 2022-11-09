@@ -4,11 +4,13 @@ namespace TheHiddenFortress;
 
 public class HiddenFortress
 {
+    public Action<string> Output { get; }
     private readonly int _size;
     private readonly int[,] _original;
 
-    public HiddenFortress(int size, string field)
+    public HiddenFortress(int size, string field, Action<string> output)
     {
+        Output = output;
         _size = size;
         _original = new int[size, size];
         string[] fieldRows = field
@@ -31,111 +33,41 @@ public class HiddenFortress
 
     public bool[,] Solve()
     {
+        double total = 0;
+        for (int i = 0; i < _size; i++)
+        for (int j = 0; j < _size; j++)
+            total += _original[i, j];
+
+        total /= (2d * _size - 1);
+
         bool[,] result = new bool[_size, _size];
         for (int i = 0; i < _size; i++)
         {
             for (int j = 0; j < _size; j++)
-                result[i, j] = true;
-        }
+            {
+                int value = _original[i, j];
+                double r = 0;
+                double c = 0;
+                for (int k = 0; k < _size; k++)
+                {
+                    r += _original[i, k];
+                    c += _original[k, j];
+                }
 
-        Guess(result, _original, 0, 0);
+                double rrr = (r - total) / (_size - 1d) + (c - total) / (_size - 1d);
+                Output($"{rrr} - {value} \t\t = {rrr-value}");
+                int expected = (int)rrr;
+                if (value != expected)
+                    result[i, j] = true;
+            }
+        }
+        
         return result;
     }
 
     public long Iterations { get; private set; }
     public long ValidationIterations { get; private set; }
     
-    private bool Guess(bool[,] field, int[,] expected, int x, int y)
-    {
-        if (!PreValidate(field, expected))
-            return false;
-
-        Iterations++;
-        (int xx, int yy)? next = GetNext(x, y);
-        if (next is null) // end
-        {
-            if (!Validate(field, expected))
-            {
-                field[x, y] = false;
-                if (!Validate(field, expected))
-                {
-                    field[x, y] = true;
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        (int xx, int yy) = next.Value;
-
-        field[x, y] = false;
-        if (!Guess(field, expected, xx, yy))
-        {
-            field[x, y] = true;
-            if (!Guess(field, expected, xx, yy))
-                return false;
-        }
-
-        return true;
-    }
-
-    private (int, int)? GetNext(int x, int y)
-    {
-        int last = _size - 1;
-        if (x == last && y == last)
-            return null;
-        if (y == last)
-            return (x + 1, 0);
-
-        return (x, y + 1);
-    }
-
-    private bool Validate(bool[,] field, int[,] expected)
-    {
-        for (int i = 0; i < _size; i++)
-        {
-            for (int j = 0; j < _size; j++)
-            {
-                ValidationIterations++;
-                int total = 0;
-                for (int c = 0; c < _size; c++)
-                {
-                    if (field[i, c]) total++;
-                    if (field[c, j]) total++;
-                }
-
-                int result = field[i, j] ? total - 1 : total;
-                if (result != expected[i, j])
-                    return false;
-            }
-        }
-
-        return true;
-    }
-
-    private bool PreValidate(bool[,] field, int[,] expected)
-    {
-        for (int i = 0; i < _size; i++)
-        {
-            for (int j = 0; j < _size; j++)
-            {
-                int total = 0;
-                for (int c = 0; c < _size; c++)
-                {
-                    if (!field[i, c]) total++;
-                    if (!field[c, j]) total++;
-                }
-
-                int result = !field[i, j] ? total - 1 : total;
-                if (result > (2 * _size - 1 - expected[i,j]))
-                    return false;
-            }
-        }
-
-        return true;
-    }
-
     public static void Print(bool[,] next)
     {
         // print result

@@ -19,7 +19,7 @@ public class HiddenFortressTests
     [MemberData(nameof(TestData))]
     public void Test(int size, string field, bool[,] expected)
     {
-        var fortress = new HiddenFortress(size, field);
+        var fortress = new HiddenFortress(size, field, _outputHelper.WriteLine);
         var sw = Stopwatch.StartNew();
         var result = fortress.Solve();
         _outputHelper.WriteLine(sw.Elapsed.ToString());
