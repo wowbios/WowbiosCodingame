@@ -55,19 +55,18 @@ public class HiddenFortress
                 }
 
                 double rrr = (r - total) / (_size - 1d) + (c - total) / (_size - 1d);
-                Output($"{rrr} - {value} \t\t = {rrr-value}");
                 int expected = (int)rrr;
                 if (value != expected)
                     result[i, j] = true;
             }
         }
-        
+
         return result;
     }
 
     public long Iterations { get; private set; }
     public long ValidationIterations { get; private set; }
-    
+
     public static void Print(bool[,] next)
     {
         // print result
